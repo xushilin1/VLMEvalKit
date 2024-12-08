@@ -8,6 +8,10 @@ def build_judge(**kwargs):
     from ...api import OpenAIWrapper, SiliconFlowAPI
     model = kwargs.pop('model', None)
     kwargs.pop('nproc', None)
+    if model == 'private_api':
+        from ...extension.private_api import PrivateAPI
+        model = PrivateAPI(**kwargs)
+        return model
     load_env()
     LOCAL_LLM = os.environ.get('LOCAL_LLM', None)
     if LOCAL_LLM is None:

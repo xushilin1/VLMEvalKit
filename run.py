@@ -1,4 +1,9 @@
 import torch
+try:
+    import torch_npu
+    from torch_npu.contrib import transfer_to_npu
+except:
+    pass
 import torch.distributed as dist
 
 from vlmeval.config import supported_VLM
@@ -111,7 +116,7 @@ You can launch the evaluation by setting either --data and --model or --config.
     # Infer + Eval or Infer Only
     parser.add_argument('--mode', type=str, default='all', choices=['all', 'infer'])
     # API Kwargs, Apply to API VLMs and Judge API LLMs
-    parser.add_argument('--nproc', type=int, default=4, help='Parallel API calling')
+    parser.add_argument('--nproc', type=int, default=1, help='Parallel API calling')
     parser.add_argument('--retry', type=int, default=None, help='retry numbers for API VLMs')
     # Explicitly Set the Judge Model
     parser.add_argument('--judge', type=str, default=None)
@@ -168,7 +173,7 @@ def main():
         date, commit_id = timestr('day'), githash(digits=8)
         eval_id = f"T{date}_G{commit_id}"
 
-        pred_root = osp.join(args.work_dir, model_name, eval_id)
+        pred_root = osp.join(args.work_dir, model_name)
         pred_root_meta = osp.join(args.work_dir, model_name)
         os.makedirs(pred_root_meta, exist_ok=True)
 
@@ -404,15 +409,15 @@ def main():
                         proxy_set(old_proxy)
 
                     # Create the symbolic links for the prediction files
-                    files = os.listdir(pred_root)
-                    files = [x for x in files if f'{model_name}_{dataset_name}' in x]
-                    for f in files:
-                        cwd = os.getcwd()
-                        file_addr = osp.join(cwd, pred_root, f)
-                        link_addr = osp.join(cwd, pred_root_meta, f)
-                        if osp.exists(link_addr) or osp.islink(link_addr):
-                            os.remove(link_addr)
-                        os.symlink(file_addr, link_addr)
+                    # files = os.listdir(pred_root)
+                    # files = [x for x in files if f'{model_name}_{dataset_name}' in x]
+                    # for f in files:
+                    #     cwd = os.getcwd()
+                    #     file_addr = osp.join(cwd, pred_root, f)
+                    #     link_addr = osp.join(cwd, pred_root_meta, f)
+                    #     if osp.exists(link_addr) or osp.islink(link_addr):
+                    #         os.remove(link_addr)
+                    #     os.symlink(file_addr, link_addr)
 
             except Exception as e:
                 logger.exception(f'Model {model_name} x Dataset {dataset_name} combination failed: {e}, '
