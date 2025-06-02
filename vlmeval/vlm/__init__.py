@@ -97,3 +97,4 @@ from .vlaa_thinker import VLAAThinkerChat
 from .kimi_vl import KimiVL
 from .wethink_vl import WeThinkVL
 from .flash_vl import FlashVL
+from .smallvlm import SmallVLM

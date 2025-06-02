@@ -907,6 +907,11 @@ smolvlm_series = {
     "SmolVLM2": partial(SmolVLM2, model_path="HuggingFaceTB/SmolVLM2-2.2B-Instruct"),
 }
 
+
+smallvlm_series = {
+    "smallvlm": partial(SmallVLM, model_path="shilinxu/SmallVLM"),
+}
+
 instructblip_series = {
     "instructblip_7b": partial(InstructBLIP, name="instructblip_7b"),
     "instructblip_13b": partial(InstructBLIP, name="instructblip_13b"),
@@ -1387,7 +1392,7 @@ model_groups = [
     kosmos_series, points_series, nvlm_series, vintern_series, h2ovl_series,
     aria_series, smolvlm_series, sail_series, valley_series, vita_series,
     ross_series, emu_series, ola_series, ursa_series, gemma_series,
-    long_vita_series, ristretto_series, kimi_series, aguvis_series, flash_vl
+    long_vita_series, ristretto_series, kimi_series, aguvis_series, flash_vl, smallvlm_series
 ]
 
 for grp in model_groups:
