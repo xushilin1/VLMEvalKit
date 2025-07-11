@@ -15,7 +15,7 @@ class SmallVLM(BaseModel):
 
     def __init__(self,
                 model_path="shilinxu/SmallVLM",
-                max_new_tokens=2048,
+                max_new_tokens=128,
                 top_p=0.001,
                 top_k=1,
                 temperature=0.01,
@@ -84,7 +84,11 @@ class SmallVLM(BaseModel):
         vision_infos = self.extract_vision_info(messages)
         for vision_info in vision_infos:
             if "image" in vision_info or "image_url" in vision_info:
-                image_inputs.append(vision_info['image'])
+                if isinstance(vision_info['image'], str):
+                    image=Image.open(vision_info['image'])
+                    if image.mode != 'RGB':
+                        image = image.convert('RGB')
+                image_inputs.append(image)
             elif 'image_url' in vision_info:
                 image_inputs.append(vision_info['image_url'])
             else:
@@ -99,6 +103,10 @@ class SmallVLM(BaseModel):
             **self.generate_kwargs,
         )
         
+        generated_ids = [
+            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+
         out = self.processor.tokenizer.batch_decode(
             generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
